@@ -2,6 +2,8 @@
 
 hier befinden sich einige kleine Übungen um das Programmieren ein wenig zu üben und paar kleine Probleme zu lösen.
 
+Node Version: mind 16
+
 Um das Projekt zum laufen zu bekommen:
 
 - pnpm install
