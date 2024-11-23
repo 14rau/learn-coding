@@ -1,4 +1,5 @@
 import { Item } from "../Entities/Item";
+import { Marker } from "../Entities/Marker";
 import { Player } from "../Entities/Player";
 import { Wall } from "../Entities/Wall";
 import { renderGrid } from "../Grid";
@@ -23,15 +24,26 @@ export class PlayingField {
 			// player has the highest render priority
 			this.player.getRenderData(),
 			...this.items.map(item => item.getRenderData()),
-			...this.walls.map(wall => wall.getRenderData())
+			...this.walls.map(wall => wall.getRenderData()),
+			...this.markers.map(marker => marker.getRenderData())
 		]
 	}
 
 	public get entities() {
-		return [ ...this.items, ...this.walls ];
+		return [ ...this.items, ...this.walls, ...this.markers ];
 	}
 	public walls: Wall[] = [];
 	public items: Item[] = [];
+	public markers: Marker[] = [];
+
+	public placeMarker(posX: number, posY: number) {
+		// place marker when there is none on this position
+		const marker = this.markers.find(marker => marker.getRenderData().x === posX && marker.getRenderData().y === posY);
+		if(marker) return;
+		this.markers.push(new Marker({ x: posX, y: posY, symbol: "." }, this));
+
+	}
+
 	private x: number;
 	private y: number;
 
@@ -88,7 +100,7 @@ export class PlayingField {
 		for(let i = 0; i < this.gameBoard.length; i++) {
 			console.log(this.gameBoard[i]);
 			console.log(...this.gameStat[i]);
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			await new Promise(resolve => setTimeout(resolve, 10));
 		}
 	}
 

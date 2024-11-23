@@ -44,7 +44,7 @@ export class Entity {
 	}
 
 
-	public action(action: { kind: string, data: any }) {
+	protected action(action: { kind: string, data: any }) {
 		if(this.gameField.gameEnded === true) return; // no action will be performed
 		// put action on the action stack
 		this.actions.push(action);

@@ -1,4 +1,6 @@
+import { randomInt } from "crypto";
 import { PlayingFieldV2 } from "../game/PlayingField/PlayingFieldV2";
+
 
 
 
@@ -9,24 +11,31 @@ import { PlayingFieldV2 } from "../game/PlayingField/PlayingFieldV2";
  */
 export class Lesson7 extends PlayingFieldV2 {
 	public get lessonName() {
-		return "Lesson 6";
+		return "Lesson 7";
 	}
 	constructor() {
 		super(10, 10);
-		this.spawnPlayer(9, 9);
-		this.spawnItem(0, 0, "❤️");
-		this.drawWall(1, 0, "y", 9);
-		this.drawWall(3, 1, "y", 9);
-		this.drawWall(5, 0, "y", 9);
-		this.drawWall(6, 4, "x", 3);
+		this.spawnPlayer(5, 5);
+		this.spawnItem(randomInt(10), randomInt(10), "❤️");
 	}
 
 	public run() {
-		// this.player <--- Das ist der Spieler den du bewegen kannst
+		let rounds = 0;
+		while(this.player.inventory.length === 0 && rounds < 500) {
+			rounds++;
+			// this.player <--- Das ist der Spieler den du bewegen kannst
+			if(this.player.checkFront() === "out-of-bounds") {
+				this.player.turnClockWise();
+			}
+			this.player.placeMarker();
+			this.player.movePlayer();
+		}
+			
 	}
 
 
 	public checkGameConditions(): boolean {
+		if(this.player.inventory[0]) return true;
 		return false;
 	}
 }

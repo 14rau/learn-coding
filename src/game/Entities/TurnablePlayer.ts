@@ -21,6 +21,10 @@ export class TurnablePlayer extends Player {
 	constructor({ x, y }, field: PlayingFieldV2) {
 		super({ x, y }, field);
 	}
+
+	public get facingDirection() {
+		return this.direction;
+	}
 	
 	public turnRight() {
 		this.action({ kind: "$turnRight", data: {} });
@@ -36,6 +40,70 @@ export class TurnablePlayer extends Player {
 
 	public turnDown() {
 		this.action({ kind: "$turnDown", data: {} });
+	}
+
+	public turnClockWise() {
+		this.action({ kind: "$turnClockWise", data: {} });
+	}
+
+	public turnCounterClockWise() {
+		this.action({ kind: "$turnAntiClockWise", data: {} });
+	}
+
+	protected $turnClockWise() {
+		if(this.direction === Direction.Up) {
+			this.direction = Direction.Right;
+		} else if (this.direction === Direction.Right) {
+			this.direction = Direction.Down;
+		} else if (this.direction === Direction.Down) {
+			this.direction = Direction.Left;
+		} else if (this.direction === Direction.Left) {
+			this.direction = Direction.Up;
+		}
+	}
+
+	protected $turnAntiClockWise() {
+		if(this.direction === Direction.Up) {
+			this.direction = Direction.Left;
+		} else if (this.direction === Direction.Left) {
+			this.direction = Direction.Down;
+		} else if (this.direction === Direction.Down) {
+			this.direction = Direction.Right;
+		} else if (this.direction === Direction.Right) {
+			this.direction = Direction.Up;
+		}
+	}
+
+	/**
+	 * make this method unusable
+	 * @deprecated
+	 */
+	public moveUp() {
+		return;
+	}
+
+	/**
+	 * make this method unusable
+	 * @deprecated
+	 */
+	public moveDown() {
+		return;
+	}
+
+	/**
+	 * make this method unusable
+	 * @deprecated
+	 */
+	public moveLeft() {
+		return;
+	}
+
+	/**
+	 * make this method unusable
+	 * @deprecated
+	 */
+	public moveRight() {
+		return;
 	}
 
 	protected $turnUp() {
@@ -68,16 +136,40 @@ export class TurnablePlayer extends Player {
 	protected $movePlayer() {
 		switch(this.direction) {
 			case Direction.Up:
-				this.moveUp();
+				this.action({
+					kind: "move",
+					data: {
+						direction: "$y",
+						amount: -1
+					}
+				})
 				break;
 			case Direction.Down:
-				this.moveDown();
+				this.action({
+					kind: "move",
+					data: {
+						direction: "$y",
+						amount: 1
+					}
+				})
 				break;
 			case Direction.Left:
-				this.moveLeft();
+				this.action({
+					kind: "move",
+					data: {
+						direction: "$x",
+						amount: -1
+					}
+				})
 				break;
 			case Direction.Right:
-				this.moveRight();
+				this.action({
+					kind: "move",
+					data: {
+						direction: "$x",
+						amount: 1
+					}
+				})
 				break;
 		}
 	}
@@ -86,7 +178,7 @@ export class TurnablePlayer extends Player {
 		return this.gameField.entities;
 	}
 
-	public checkFront(): "wall" | "empty" | "item" | "out-of-bounds" {
+	public checkFront(): "wall" | "empty" | "item" | "out-of-bounds" | "marker" {
 		const { x, y } = this.calculateNextPosition();
 		const frontEntity = this.entities.find(entity => {
 			switch(this.direction) {
@@ -101,22 +193,41 @@ export class TurnablePlayer extends Player {
 			}
 		});
 		if(frontEntity) {
-			return frontEntity.type as "wall" | "item";
+			return frontEntity.type as "wall" | "item" | "marker";
 		}
 		
 		if(x < 0 || y < 0 || x >= this.gameField.width || y >= this.gameField.height) {
 			return "out-of-bounds";
 		}
-
-
 		return "empty";
 	}
-	public checkUnder(): "wall" | "empty" | "item" {
+
+	public checkLeft(): "wall" | "empty" | "item" | "marker" {
+		const frontEntity = this.entities.find(entity => {
+			return entity.x === this.x - 1 && entity.y === this.y;
+		});
+		if(frontEntity) {
+			return frontEntity.type as "wall" | "item" | "marker";
+		}
+		return "empty";
+	}
+
+	public checkRight(): "wall" | "empty" | "item" | "marker" {
+		const frontEntity = this.entities.find(entity => {
+			return entity.x === this.x + 1 && entity.y === this.y;
+		});
+		if(frontEntity) {
+			return frontEntity.type as "wall" | "item" | "marker";
+		}
+		return "empty";
+	}
+
+	public checkUnder(): "wall" | "empty" | "item" | "marker" {
 		const frontEntity = this.entities.find(entity => {
 			return entity.x === this.x && entity.y === this.y + 1;
 		});
 		if(frontEntity) {
-			return frontEntity.type as "wall" | "item";
+			return frontEntity.type as "wall" | "item" | "marker";
 		}
 		return "empty";
 	}
@@ -132,5 +243,13 @@ export class TurnablePlayer extends Player {
 			case Direction.Right:
 				return { x: this.x + 1, y: this.y };
 		}
+	}
+
+	public placeMarker() {
+		this.action({ kind: "$placeMarker", data: {} });
+	}
+
+	protected $placeMarker() {
+		this.gameField.placeMarker(this.x, this.y);
 	}
 }

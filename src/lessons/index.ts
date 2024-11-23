@@ -5,4 +5,5 @@ export * from "./Lesson4";
 export * from "./Lesson5";
 export * from "./Lesson6";
 export * from "./Lesson7";
+export * from "./Lesson8";
 
