@@ -20,17 +20,7 @@ export class Lesson7 extends PlayingFieldV2 {
 	}
 
 	public run() {
-		let rounds = 0;
-		while(this.player.inventory.length === 0 && rounds < 500) {
-			rounds++;
-			// this.player <--- Das ist der Spieler den du bewegen kannst
-			if(this.player.checkFront() === "out-of-bounds") {
-				this.player.turnClockWise();
-			}
-			this.player.placeMarker();
-			this.player.movePlayer();
-		}
-			
+	
 	}
 
 

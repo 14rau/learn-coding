@@ -30,7 +30,6 @@ export class Lesson8 extends PlayingFieldV2 {
 
 	public run() {
 		// this.player <--- Das ist der Spieler den du bewegen kannst
-		this.items
 	}
 
 
